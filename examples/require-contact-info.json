@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "contact.email": {
+      "type": "string",
+      "format": "email",
+      "minLength": 5,
+      "description": "team email address to be contacted when the connector is affected by maintenance work on kafka connect"
+    },
+    "contact.teams": {
+      "type": "string",
+      "format": "uri",
+      "description": "url to the ms teams channel to be contacted when the connector is affected by maintenance work on kafka connect"
+    }
+  },
+  "required": [
+    "contact.email",
+    "contact.teams"
+  ]
+}

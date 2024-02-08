@@ -1,0 +1,7 @@
+[
+  {
+    "name": "require-contact-info",
+    "className": "io.spoud.kafka.connect.extensions.check.JsonSchemaCheck",
+    "configFile": "bad-policy.json"
+  }
+]
