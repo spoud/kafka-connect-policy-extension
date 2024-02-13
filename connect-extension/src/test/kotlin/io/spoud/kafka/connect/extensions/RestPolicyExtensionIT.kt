@@ -94,7 +94,7 @@ class RestPolicyExtensionIT {
         connect
             .waitingFor(Wait.forHealthcheck())
             .waitingFor(Wait.forHttp("/connectors"))
-            .waitingFor(Wait.forLogMessage("Finished starting connectors and tasks", 1))
+            .waitingFor(Wait.forLogMessage("REST resources initialized; server is started and ready to handle requests", 1))
         val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
         val createConnectorUrl = "$baseUrl/connectors/newTestConnector/config"
         println(createConnectorUrl)
