@@ -4,6 +4,7 @@ import io.restassured.RestAssured.given
 import io.restassured.http.ContentType
 import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.hasItems
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.GenericContainer
@@ -36,7 +37,7 @@ class RestPolicyExtensionIT {
                     .withHostName("kafka$testId")
 
             }
-            .withListener {  "kafka$testId:29092" }
+            .withListener { "kafka$testId:29092" }
             .withEnv("CONFLUENT_METRICS_ENABLE", "false")
             .withKraft()
             .withNetwork(network)
@@ -88,13 +89,23 @@ class RestPolicyExtensionIT {
         .withExposedPorts(CONNECT_PORT)
         .withLogConsumer(Slf4jLogConsumer(LoggerFactory.getLogger("connect-container")))
 
-
-    @Test
-    fun `should require additional properties when creating a connector via PUT`() {
+    @BeforeEach
+    fun setUp() {
         connect
             .waitingFor(Wait.forHealthcheck())
             .waitingFor(Wait.forHttp("/connectors"))
-            .waitingFor(Wait.forLogMessage("REST resources initialized; server is started and ready to handle requests", 1))
+            .waitingFor(
+                Wait.forLogMessage(
+                    "REST resources initialized; server is started and ready to handle requests",
+                    1
+                )
+            )
+        // ensure that rest resources are ready to serve requests
+        Thread.sleep(500)
+    }
+
+    @Test
+    fun `should require additional properties when creating a connector via PUT`() {
         val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
         val createConnectorUrl = "$baseUrl/connectors/newTestConnector/config"
         println(createConnectorUrl)
