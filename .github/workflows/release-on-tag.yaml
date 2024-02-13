@@ -23,9 +23,9 @@ jobs:
         working-directory: ./connect-extension
         # The GITHUB_REF tag is in the format 'refs/tags/xxx'.
         run: |
-          NEW_VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
-          echo "New version: ${NEW_VERSION}"
-          ./gradlew -Pversion=${NEW_VERSION} shadowJar
+          export VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
+          echo "New version: ${VERSION}"
+          ./gradlew shadowJar
 
       - name: create gh release
         uses: ncipollo/release-action@v1.14.0

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.spoud.kafka"
-version = "0" // set by github actions when released
+version = System.getenv("VERSION") ?: "0"
 
 java {
     targetCompatibility = JavaVersion.VERSION_11
