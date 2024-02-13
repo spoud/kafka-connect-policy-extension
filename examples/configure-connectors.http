@@ -1,0 +1,50 @@
+### create connector with invalid contact info
+PUT http://localhost:8083/connectors/datagen-transactions/config
+Content-Type: application/json
+
+{
+    "connector.class": "io.confluent.kafka.connect.datagen.DatagenConnector",
+    "kafka.topic": "transactions",
+    "quickstart": "transactions",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "max.interval": 1000,
+    "tasks.max": 1,
+    "contact.email": ""
+}
+
+
+### create connector with too many tasks
+PUT http://localhost:8083/connectors/datagen-transactions/config
+Content-Type: application/json
+
+{
+    "connector.class": "io.confluent.kafka.connect.datagen.DatagenConnector",
+    "kafka.topic": "transactions",
+    "quickstart": "transactions",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "max.interval": 1000,
+    "tasks.max": 5,
+    "contact.email": "team-alpha@example.com",
+    "contact.teams": "https://teams-link"
+}
+
+### call validate endpoint
+PUT http://localhost:8083/connector-plugins/io.confluent.kafka.connect.datagen.DatagenConnector/config/validate
+Content-Type: application/json
+
+{
+    "connector.class": "io.confluent.kafka.connect.datagen.DatagenConnector",
+    "kafka.topic": "transactions",
+    "quickstart": "transactions",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "max.interval": 1000,
+    "tasks.max": 4,
+    "contact.email": "team-alpha@example.com",
+    "contact.teams": "https://teams-link"
+}
