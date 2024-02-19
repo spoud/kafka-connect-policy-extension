@@ -25,10 +25,10 @@ jobs:
         run: |
           export VERSION=$(echo "${GITHUB_REF}" | cut -d "/" -f3)
           echo "New version: ${VERSION}"
-          ./gradlew shadowJar
+          ./gradlew shadowJar createConfluentHubComponentArchive
 
       - name: create gh release
         uses: ncipollo/release-action@v1.14.0
         with:
-          artifacts: "connect-extension/build/libs/*.jar"
+          artifacts: "connect-extension/build/output/*.zip"
           makeLatest: true
