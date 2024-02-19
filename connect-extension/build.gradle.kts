@@ -70,9 +70,47 @@ kotlin {
     jvmToolchain(11)
 }
 
+tasks.register("prepareFolderForConfluentHubArchive") {
+    dependsOn("shadowJar")
+
+    copy {
+        from(layout.projectDirectory.dir("confluentArchiveBase"))
+        into(layout.buildDirectory.dir("toArchive"))
+    }
+
+    //TODO modify version in manifest.json
+
+    copy {
+        from(layout.projectDirectory.dir("../examples/")) {
+            include("*.json")
+        }
+        into(layout.buildDirectory.dir("toArchive/etc"))
+    }
+
+    //FIXME doesn't work when the shadowJar task is run through the dependency
+    copy {
+        from(layout.buildDirectory.file("libs/connect-extension-$version-all.jar"))
+        into(layout.buildDirectory.dir("toArchive/libs"))
+    }
+
+    mkdir(layout.buildDirectory.dir("toArchive/docs"))
+
+    copy {
+        from(layout.projectDirectory.file("../README.md"))
+        into(layout.buildDirectory.dir("toArchive/docs"))
+    }
+
+    copy {
+        from(layout.projectDirectory.file("../LICENSE"))
+        into(layout.buildDirectory.dir("toArchive/docs"))
+    }
+}
+
 tasks.register<Zip>("createConfluentHubComponentArchive") {
-    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
-    destinationDirectory.set(layout.buildDirectory.dir("output"))
+    dependsOn("prepareFolderForConfluentHubArchive")
 
     from(layout.buildDirectory.dir("toArchive"))
+
+    destinationDirectory.set(layout.buildDirectory.dir("output"))
+    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
 }
