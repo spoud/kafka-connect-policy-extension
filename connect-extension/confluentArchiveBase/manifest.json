@@ -20,12 +20,12 @@
     }
   ],
 
-  "logo": "assets/spound-landscape-positive.svg",
+  "logo": "assets/spound.png",
 
   "name": "kafka-connect-extension-policy-checker",
 
   "owner": {
-    "logo": "assets/spoud-landscape-positive.svg",
+    "logo": "assets/spoud.png",
     "name": "Spoud IO",
     "type": "organization",
     "url": "https://spoud.io/",
