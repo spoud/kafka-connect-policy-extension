@@ -69,3 +69,10 @@ tasks.test {
 kotlin {
     jvmToolchain(11)
 }
+
+tasks.register<Zip>("createConfluentHubComponentArchive") {
+    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("output"))
+
+    from(layout.buildDirectory.dir("toArchive"))
+}
