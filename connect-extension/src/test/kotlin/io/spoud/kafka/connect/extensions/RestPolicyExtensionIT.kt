@@ -26,11 +26,6 @@ import java.util.*
 @Testcontainers
 class RestPolicyExtensionIT {
 
-    @BeforeEach
-    fun setUp() {
-
-    }
-
     @Test
     fun `should require additional properties when creating a connector via PUT`() {
         val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
@@ -149,7 +144,6 @@ class RestPolicyExtensionIT {
         internal fun beforeAll() {
             kafka.start()
             connect.start()
-
             connect
                 .waitingFor(Wait.forHealthcheck())
                 .waitingFor(Wait.forHttp("/connectors"))
