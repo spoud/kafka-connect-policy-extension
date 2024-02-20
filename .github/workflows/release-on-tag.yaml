@@ -27,8 +27,13 @@ jobs:
           echo "New version: ${VERSION}"
           ./gradlew shadowJar createConfluentHubComponentArchive
 
+      - name: Create checksums
+        working-directory: connect-extension/build/libs/
+        shell: bash
+        run: for f in *.{jar,zip}; do sha512sum $i > $i.sha512; done
+
       - name: create gh release
         uses: ncipollo/release-action@v1.14.0
         with:
-          artifacts: "connect-extension/build/output/*.zip"
+          artifacts: "connect-extension/build/libs/*.zip,connect-extension/build/libs/*.jar,connect-extension/build/libs/*.sha512"
           makeLatest: true
