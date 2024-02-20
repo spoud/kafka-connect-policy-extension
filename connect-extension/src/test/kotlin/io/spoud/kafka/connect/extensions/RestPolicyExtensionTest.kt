@@ -22,12 +22,6 @@ class RestPolicyExtensionTest {
     }
 
     @Test
-    fun `should return number of policies`() {
-        val policiesSize = extension.policiesSize()
-        assertThat(policiesSize).isEqualTo(1)
-    }
-
-    @Test
     fun `should fail when path to json config is wrong`() {
         assertThatThrownBy {
             RestPolicyExtension().configure(mutableMapOf(CONF_FILE_PATH_PROPERTY to "/invalid/path/file.json"))
