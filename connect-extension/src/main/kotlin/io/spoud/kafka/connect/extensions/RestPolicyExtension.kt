@@ -11,6 +11,9 @@ class RestPolicyExtension : ConnectRestExtension {
         // extract file location for validation rules
         // read validation rules
         LOGGER.info("configuring the RestPolicyExtension")
+        if(!configs.contains(CONF_FILE_PATH_PROPERTY)) {
+            LOGGER.warn("Configuration $CONF_FILE_PATH_PROPERTY is not set")
+        }
         PolicyConfiguration.configure(configs)
     }
 
@@ -21,7 +24,7 @@ class RestPolicyExtension : ConnectRestExtension {
 
     override fun register(restPluginContext: ConnectRestExtensionContext) {
         restPluginContext.configurable()
-            .register(ConnectorConfigRequestFilter(PolicyConfiguration.policies))
+            .register(ConnectorConfigRequestFilter())
             .register(PoliciesResource())
     }
 

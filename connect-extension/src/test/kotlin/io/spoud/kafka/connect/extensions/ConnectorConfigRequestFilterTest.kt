@@ -19,7 +19,7 @@ class ConnectorConfigRequestFilterTest {
 
     @BeforeEach
     fun setUp() {
-        filter = ConnectorConfigRequestFilter(emptyList())
+        filter = ConnectorConfigRequestFilter()
         requiresConfigCheckMethod.isAccessible = true
     }
 

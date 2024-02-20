@@ -60,10 +60,10 @@ E.g. for alerting, you may want to know who to contact in case a connector is in
 2. Create policy config files, see the example in [examples/rest-policy-config.json](examples/rest-policy-config.json)
 3. Reference the policy config file and the `RestPolicyExtension` extension class in the Connect worker properties:
    
-       connect.rest.extension.classes: "io.spoud.kafka.connect.extensions.RestPolicyExtension"
-       connect.rest.policy.conf: "/etc/kafka-connect/policy/rest-policy-config.json"
+       rest.extension.classes: "io.spoud.kafka.connect.extensions.RestPolicyExtension"
+       rest.policy.conf: "/etc/kafka-connect/policy/rest-policy-config.json"
  
 ## Changing policies at runtime without worker restart
 
-A change to the property `connect.rest.policy.conf` requires a restart of the worker to take effect.
+A change to the property `rest.policy.conf` requires a restart of the worker to take effect.
 However, a change in the referenced json file can be reloaded at runtime by calling the reload-endpoint with `PUT /policies/reload`.

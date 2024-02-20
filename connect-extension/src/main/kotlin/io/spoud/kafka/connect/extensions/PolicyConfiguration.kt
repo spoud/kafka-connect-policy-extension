@@ -9,7 +9,7 @@ import java.io.File
 object PolicyConfiguration {
     private lateinit var configs: MutableMap<String, *>
     private val LOGGER = LoggerFactory.getLogger(PolicyConfiguration::class.java)
-    var policies: MutableList<PolicyCheck> = mutableListOf()
+    val policies: MutableList<PolicyCheck> = mutableListOf()
 
 
     fun configure(configs: MutableMap<String, *>) {
@@ -21,7 +21,6 @@ object PolicyConfiguration {
         if (configs.contains(RestPolicyExtension.CONF_FILE_PATH_PROPERTY)) {
             val file = File(configs[RestPolicyExtension.CONF_FILE_PATH_PROPERTY].toString())
             val jsonString = file.readText()
-
             val confChecks = Json.decodeFromString<List<ConfCheck>>(jsonString)
 
             policies.clear()

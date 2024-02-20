@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response
 import javax.ws.rs.core.Response.Status.BAD_REQUEST
 
 
-class ConnectorConfigRequestFilter(private val policyChecks: Collection<PolicyCheck>) : ContainerRequestFilter {
+class ConnectorConfigRequestFilter() : ContainerRequestFilter {
 
     private fun requiresConfigCheck(context: ContainerRequestContext): Boolean {
         val putConfig = context.method == "PUT" && CONFIG_REGEX.matches(context.uriInfo.path)
@@ -26,10 +26,10 @@ class ConnectorConfigRequestFilter(private val policyChecks: Collection<PolicyCh
     }
 
     override fun filter(context: ContainerRequestContext) {
-        LOGGER.info("Policy check filter invoked for ${context.method} ${context.uriInfo.path}")
         if (requiresConfigCheck(context)) {
+            LOGGER.debug("Policy check filter invoked for ${context.method} ${context.uriInfo.path}")
             val connectorConf = readConnectorConfig(context)
-            val violations = policyChecks.stream()
+            val violations = PolicyConfiguration.policies.stream()
                 .flatMap { it.check(connectorConf.config, connectorConf.name).stream() }
                 .collect(Collectors.toList())
             if (violations.isNotEmpty()) {
