@@ -1,7 +1,3 @@
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-
 plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.21"
@@ -76,59 +72,48 @@ kotlin {
 
 tasks.register("prepareFolderForConfluentHubArchive") {
     dependsOn("shadowJar")
+    doLast {
+        createConfluentArchiveFolder()
+    }
+}
 
+tasks.register<Zip>("createConfluentHubComponentArchive") {
+    dependsOn("prepareFolderForConfluentHubArchive")
+    from(layout.buildDirectory.dir("toArchive"))
+    destinationDirectory.set(layout.buildDirectory.dir("libs"))
+    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
+
+}
+
+fun updateJsonVersion(fileProvider: Provider<RegularFile>, newVersion: String) {
+    val file = fileProvider.get().asFile
+    val content = file.readText().replace("{{VERSION}}", newVersion)
+    file.writeText(content)
+}
+
+fun createConfluentArchiveFolder() {
     copy {
         from(layout.projectDirectory.dir("confluentArchiveBase"))
         into(layout.buildDirectory.dir("toArchive"))
     }
-
-    updateJsonVersion(layout.buildDirectory.file("toArchive/manifest.json"), version)
-
+    updateJsonVersion(layout.buildDirectory.file("toArchive/manifest.json"), version.toString())
     copy {
         from(layout.projectDirectory.dir("../examples/")) {
             include("*.json")
         }
         into(layout.buildDirectory.dir("toArchive/etc"))
     }
-
-    //FIXME doesn't work when the shadowJar task is run through the dependency
     copy {
         from(layout.buildDirectory.file("libs/connect-extension-$version-all.jar"))
         into(layout.buildDirectory.dir("toArchive/libs"))
     }
-
     mkdir(layout.buildDirectory.dir("toArchive/docs"))
-
     copy {
         from(layout.projectDirectory.file("../README.md"))
         into(layout.buildDirectory.dir("toArchive/docs"))
     }
-
     copy {
         from(layout.projectDirectory.file("../LICENSE"))
         into(layout.buildDirectory.dir("toArchive/docs"))
     }
-}
-
-fun updateJsonVersion(fileProvider: Provider<RegularFile>, newVersion: Any) {
-    val file = fileProvider.get().asFile
-
-    val json = try {
-        Gson().fromJson(file.readText(), JsonObject::class.java)
-    } catch (e: Exception) {
-        logger.error("Error parsing JSON file: $e")
-        throw GradleException("Failed to update version due to JSON parsing error.")
-    }
-
-    json.addProperty("version", newVersion.toString())
-    file.writeText(GsonBuilder().setPrettyPrinting().create().toJson(json))
-}
-
-tasks.register<Zip>("createConfluentHubComponentArchive") {
-    dependsOn("prepareFolderForConfluentHubArchive")
-
-    from(layout.buildDirectory.dir("toArchive"))
-
-    destinationDirectory.set(layout.buildDirectory.dir("output"))
-    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
 }
