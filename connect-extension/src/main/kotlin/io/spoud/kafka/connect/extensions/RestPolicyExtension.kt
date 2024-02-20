@@ -32,4 +32,4 @@ class RestPolicyExtension : ConnectRestExtension {
 }
 
 @Serializable
-data class ConfCheck(val name: String, val className: String, val configFile: String)
+data class ConfCheck(val name: String?, val className: String?, val configFile: String?)
