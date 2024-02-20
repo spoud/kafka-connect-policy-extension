@@ -124,7 +124,21 @@ class RestPolicyExtensionIT {
             .contentType(ContentType.JSON)
             .body("message", hasItems("missing required properties: [contact.email, contact.teams]"))
 
-        println(response)
+        println(response.extract().body().asPrettyString())
+    }
+
+    @Test
+    fun `should add an endpoint for reloading the policies`() {
+        val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
+        val reloadUrl = "$baseUrl/policies/reload"
+        val response = given()
+            .`when`()
+            .put(reloadUrl)
+            .then()
+            .statusCode(200)
+            .contentType(ContentType.JSON)
+
+        println(response.extract().body().asPrettyString())
     }
 
     // TODO: testcases for POST /connectors with and without policy violations, PUT /connectors/<name>, DELETE and other endpoints
@@ -140,7 +154,7 @@ class RestPolicyExtensionIT {
 
         private fun getJarFile(): File {
             val jars = File("build/libs").walk()
-                .filter { file: File -> file.name.matches("connect-extension-.+-all\\.jar".toRegex()) }
+                .filter { file: File -> file.name.matches("connect-extension-.+-all\\.jar$".toRegex()) }
                 .toList()
             assertThat(jars).hasSize(1)
             return jars[0]

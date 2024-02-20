@@ -5,7 +5,7 @@ import io.github.optimumcode.json.schema.ValidationError
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 
-class JsonSchemaCheck(schemaString: String) : PolicyCheck {
+class JsonSchemaCheck(private val schemaString: String) : PolicyCheck {
 
     private val schema: JsonSchema = parseSchemaString(schemaString)
 
@@ -20,6 +20,11 @@ class JsonSchemaCheck(schemaString: String) : PolicyCheck {
             PolicyViolation(message = it.message, check = this.javaClass.name)
         }
     }
+
+    override fun toString(): String {
+        return "JsonSchemaCheck(schema=$schemaString)"
+    }
+
 
     companion object {
         private val metaSchema = JsonSchema.fromDefinition(JsonSchemaCheck::class.java.getResource("/meta.json-schema.json")!!.readText())

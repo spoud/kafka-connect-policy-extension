@@ -3,6 +3,7 @@ plugins {
     kotlin("plugin.serialization") version "1.9.21"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("maven-publish")
+    id("jacoco")
 }
 
 group = "io.spoud.kafka"
@@ -65,6 +66,13 @@ publishing {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        csv.required = true
+    }
 }
 kotlin {
     jvmToolchain(11)
@@ -77,12 +85,14 @@ tasks.register("prepareFolderForConfluentHubArchive") {
     }
 }
 
+val extensionName = "spoud-connect-extension-policy-checker-$version"
+val archiveFolder = "toArchive/$extensionName"
+
 tasks.register<Zip>("createConfluentHubComponentArchive") {
     dependsOn("prepareFolderForConfluentHubArchive")
     from(layout.buildDirectory.dir("toArchive"))
-    destinationDirectory.set(layout.buildDirectory.dir("libs"))
-    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
-
+    destinationDirectory = layout.buildDirectory.dir("libs")
+    archiveFileName = "$extensionName.zip"
 }
 
 fun updateJsonVersion(fileProvider: Provider<RegularFile>, newVersion: String) {
@@ -94,26 +104,26 @@ fun updateJsonVersion(fileProvider: Provider<RegularFile>, newVersion: String) {
 fun createConfluentArchiveFolder() {
     copy {
         from(layout.projectDirectory.dir("confluentArchiveBase"))
-        into(layout.buildDirectory.dir("toArchive"))
+        into(layout.buildDirectory.dir(archiveFolder))
     }
-    updateJsonVersion(layout.buildDirectory.file("toArchive/manifest.json"), version.toString())
+    updateJsonVersion(layout.buildDirectory.file("$archiveFolder/manifest.json"), version.toString())
     copy {
         from(layout.projectDirectory.dir("../examples/")) {
             include("*.json")
         }
-        into(layout.buildDirectory.dir("toArchive/etc"))
+        into(layout.buildDirectory.dir("$archiveFolder/etc"))
     }
     copy {
         from(layout.buildDirectory.file("libs/connect-extension-$version-all.jar"))
-        into(layout.buildDirectory.dir("toArchive/libs"))
+        into(layout.buildDirectory.dir("$archiveFolder/lib"))
     }
-    mkdir(layout.buildDirectory.dir("toArchive/docs"))
+    mkdir(layout.buildDirectory.dir("$archiveFolder/docs"))
     copy {
         from(layout.projectDirectory.file("../README.md"))
-        into(layout.buildDirectory.dir("toArchive/docs"))
+        into(layout.buildDirectory.dir("$archiveFolder/docs"))
     }
     copy {
         from(layout.projectDirectory.file("../LICENSE"))
-        into(layout.buildDirectory.dir("toArchive/docs"))
+        into(layout.buildDirectory.dir("$archiveFolder/docs"))
     }
 }
