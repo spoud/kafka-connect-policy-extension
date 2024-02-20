@@ -69,3 +69,51 @@ tasks.test {
 kotlin {
     jvmToolchain(11)
 }
+
+tasks.register("prepareFolderForConfluentHubArchive") {
+    dependsOn("shadowJar")
+    doLast {
+        createConfluentArchiveFolder()
+    }
+}
+
+tasks.register<Zip>("createConfluentHubComponentArchive") {
+    dependsOn("prepareFolderForConfluentHubArchive")
+    from(layout.buildDirectory.dir("toArchive"))
+    destinationDirectory.set(layout.buildDirectory.dir("libs"))
+    archiveFileName.set("spoud-connect-extension-policy-checker-$version.zip")
+
+}
+
+fun updateJsonVersion(fileProvider: Provider<RegularFile>, newVersion: String) {
+    val file = fileProvider.get().asFile
+    val content = file.readText().replace("{{VERSION}}", newVersion)
+    file.writeText(content)
+}
+
+fun createConfluentArchiveFolder() {
+    copy {
+        from(layout.projectDirectory.dir("confluentArchiveBase"))
+        into(layout.buildDirectory.dir("toArchive"))
+    }
+    updateJsonVersion(layout.buildDirectory.file("toArchive/manifest.json"), version.toString())
+    copy {
+        from(layout.projectDirectory.dir("../examples/")) {
+            include("*.json")
+        }
+        into(layout.buildDirectory.dir("toArchive/etc"))
+    }
+    copy {
+        from(layout.buildDirectory.file("libs/connect-extension-$version-all.jar"))
+        into(layout.buildDirectory.dir("toArchive/libs"))
+    }
+    mkdir(layout.buildDirectory.dir("toArchive/docs"))
+    copy {
+        from(layout.projectDirectory.file("../README.md"))
+        into(layout.buildDirectory.dir("toArchive/docs"))
+    }
+    copy {
+        from(layout.projectDirectory.file("../LICENSE"))
+        into(layout.buildDirectory.dir("toArchive/docs"))
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "component_types": [
+    "filter",
+    "rest-extension"
+  ],
+  "description": "This is a lightweight extension for Kafka Connect Workers to perform additional checks on the Kafka Connect REST API.",
+  "documentation_url": "https://github.com/spoud/kafka-connect-policy-extension/blob/main/README.md",
+  "features": {
+    "confluent_control_center_integration": false
+  },
+  "license": [
+    {
+      "name": "MIT License",
+      "url": "https://opensource.org/license/mit/"
+    }
+  ],
+  "logo": "assets/spoud.png",
+  "name": "kafka-connect-extension-policy-checker",
+  "owner": {
+    "logo": "assets/spoud.png",
+    "name": "Spoud AG",
+    "type": "organization",
+    "url": "https://spoud.io/",
+    "username": "spoud"
+  },
+  "tags": [
+    "validation",
+    "policies"
+  ],
+  "title": "Kafka Connect Policy checker",
+  "version": "{{VERSION}}"
+}
