@@ -2,6 +2,7 @@ package io.spoud.kafka.connect.extensions
 
 import io.spoud.kafka.connect.extensions.check.JsonSchemaCheck
 import io.spoud.kafka.connect.extensions.check.PolicyCheck
+import io.spoud.kafka.connect.extensions.check.RegexCheck
 import kotlinx.serialization.json.Json
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -28,7 +29,9 @@ object PolicyConfiguration {
                 val path = "${file.parentFile.path}/${it.configFile}"
                 if (it.className == JsonSchemaCheck::class.qualifiedName) {
                     JsonSchemaCheck(File(path).readText())
-                } else {
+                } else if (it.className == RegexCheck::class.qualifiedName) {
+                    RegexCheck(File(path).readText())
+                } else{
                     throw IllegalArgumentException("no implementation for ${it.className} found")
                 }
             })

@@ -1,0 +1,20 @@
+[
+  {
+    "fieldName" : "tasks.max",
+    "mandatory": false,
+    "regex": "^\\d+$",
+    "message" : "Field tasks.max should be present and have a numerical value"
+  },
+  {
+    "fieldName" : "creationDate",
+    "mandatory": true,
+    "regex": "^\"\\d\\d.\\d\\d.\\d\\d\\d\\d\"$",
+    "message" : "creationDate has to be present and have be in \"mm.dd.yyyy\" format"
+  },
+  {
+    "fieldName": "contact.email",
+    "mandatory" : true,
+    "regex": "^\"[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\"$",
+    "message": "valid email is requested"
+  }
+]

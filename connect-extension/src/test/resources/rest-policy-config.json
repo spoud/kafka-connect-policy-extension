@@ -3,5 +3,10 @@
     "name": "require-contact-info",
     "className": "io.spoud.kafka.connect.extensions.check.JsonSchemaCheck",
     "configFile": "require-contact-info.json"
+  },
+  {
+    "name": "Multiple-regexes",
+    "className": "io.spoud.kafka.connect.extensions.check.RegexCheck",
+    "configFile": "regex-configuration.json"
   }
 ]
