@@ -1,6 +1,5 @@
 package io.spoud.kafka.connect.extensions
 
-import io.spoud.kafka.connect.extensions.check.PolicyCheck
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -77,8 +76,8 @@ class ConnectorConfigRequestFilter() : ContainerRequestFilter {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(ConnectorConfigRequestFilter::class.java)
-        private val CONFIG_REGEX: Regex = Regex("^connectors/.+/config/?$")
-        private val POST_NEW_REGEX: Regex = Regex("^connectors/.+/?$")
-        private val VALIDATE_REGEX: Regex = Regex("^connector-plugins/.+/config/validate/?$")
+        private val CONFIG_REGEX: Regex = Regex("^connectors/[^/]+/config/?$")
+        private val POST_NEW_REGEX: Regex = Regex("^connectors/[^/]+/?$")
+        private val VALIDATE_REGEX: Regex = Regex("^connector-plugins/[^/]+/config/validate/?$")
     }
 }
