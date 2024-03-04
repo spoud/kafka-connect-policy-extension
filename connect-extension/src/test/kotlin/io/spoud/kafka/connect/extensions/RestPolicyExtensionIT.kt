@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.hamcrest.Matchers.hasItems
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.GenericContainer
@@ -16,7 +15,6 @@ import org.testcontainers.containers.output.Slf4jLogConsumer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.images.builder.dockerfile.DockerfileBuilder
-import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 import org.testcontainers.utility.DockerImageName
 import java.io.File
@@ -27,7 +25,7 @@ import java.util.*
 class RestPolicyExtensionIT {
 
     @Test
-    fun `should require additional properties when creating a connector via PUT`() {
+    fun `should require additional properties when creating or updating a connector via PUT`() {
         val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
         val createConnectorUrl = "$baseUrl/connectors/newTestConnector/config"
         println(createConnectorUrl)
@@ -50,6 +48,37 @@ class RestPolicyExtensionIT {
     }
 
     @Test
+    fun `should require additional properties when creating or updating a connector via POST`() {
+        val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
+        val createConnectorUrl = "$baseUrl/connectors"
+        println("connector url ahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: $createConnectorUrl")
+        val response = given()
+            .contentType(ContentType.JSON)
+            .body(
+                """{
+    "name": "hdfs-sink-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.hdfs.HdfsSinkConnector",
+        "tasks.max": "10",
+        "topics": "test-topic",
+        "hdfs.url": "hdfs://fakehost:9000",
+        "hadoop.conf.dir": "/opt/hadoop/conf",
+        "hadoop.home": "/opt/hadoop",
+        "flush.size": "100",
+        "rotate.interval.ms": "1000"
+    }
+}""".trimIndent()
+            ).`when`()
+            .post(createConnectorUrl)
+            .then()
+            .statusCode(400)
+            .contentType(ContentType.JSON)
+            .body("message", hasItems("missing required properties: [contact.email, contact.teams]"))
+
+        println(response.extract().body().asPrettyString())
+    }
+
+    @Test
     fun `should add an endpoint for reloading the policies`() {
         val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
         val reloadUrl = "$baseUrl/policies/reload"
@@ -59,6 +88,124 @@ class RestPolicyExtensionIT {
             .then()
             .statusCode(200)
             .contentType(ContentType.JSON)
+
+        println(response.extract().body().asPrettyString())
+    }
+
+
+    @Test
+    fun `should pass when creating or updating a connector with correct config via PUT`() {
+        val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
+        val createConnectorUrl = "$baseUrl/connectors/newTestConnector/config"
+        println(createConnectorUrl)
+        val response = given()
+            .contentType(ContentType.JSON)
+            .body(
+                """{
+                "connector.class": "org.apache.kafka.connect.tools.MockSinkConnector",
+                "tasks.max": 1,
+                "topics": "test-topic",
+                "contact.email": "team@company.com",
+                "contact.teams": "https://somems--teams-channel"
+                }""".trimIndent()
+            ).`when`()
+            .put(createConnectorUrl)
+            .then()
+            .statusCode(201)
+            .contentType(ContentType.JSON)
+
+        println(response.extract().body().asPrettyString())
+    }
+
+    @Test
+    fun `should pass when creating a connector with a correct config via POST`() {
+        val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
+        val createConnectorUrl = "$baseUrl/connectors"
+        println(createConnectorUrl)
+        val response = given()
+            .contentType(ContentType.JSON)
+            .body(
+                """{
+                "name": "test-connector-post",
+                "config": {
+                    "connector.class": "org.apache.kafka.connect.tools.MockSinkConnector",
+                    "tasks.max": 1,
+                    "topics": "test-topic",
+                    "contact.email": "team@company.com",
+                    "contact.teams": "https://some-ms-teams-channel"
+                }
+                }""".trimIndent()
+            ).`when`()
+            .post(createConnectorUrl)
+            .then()
+            .statusCode(201)
+            .contentType(ContentType.JSON)
+
+        println(response.extract().body().asPrettyString())
+
+        val response2 = given()
+            .contentType(ContentType.JSON)
+            .body(
+                """{
+                "name": "test-connector-post-bad",
+                "config": {
+                    "connector.class": "org.apache.kafka.connect.tools.MockSinkConnector",
+                    "tasks.max": 1,
+                    "topics": "test-topic"
+                }
+                }""".trimIndent()
+            ).`when`()
+            .post(createConnectorUrl)
+            .then()
+            .statusCode(400)
+            .contentType(ContentType.JSON)
+            .body("message", hasItems("missing required properties: [contact.email, contact.teams]"))
+
+        println(response2.extract().body().asPrettyString())
+    }
+
+    @Test
+    fun `should require additional properties when validate a connector`() {
+        val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
+        val validateConnectorUrl = "$baseUrl/connector-plugins/connector-name/config/validate/"
+        println(validateConnectorUrl)
+        val response = given()
+            .contentType(ContentType.JSON)
+            .body(
+                """{
+                "connector.class": "org.apache.kafka.connect.tools.MockSinkConnector",
+                "tasks.max": 1,
+                "topics": "test-topic"
+                }""".trimIndent()
+            ).`when`()
+            .put(validateConnectorUrl)
+            .then()
+            .statusCode(400)
+            .contentType(ContentType.JSON)
+            .body("message", hasItems("missing required properties: [contact.email, contact.teams]"))
+
+        println(response.extract().body().asPrettyString())
+    }
+
+    @Test
+    fun `should pass when validating a connector with correct properties`() {
+        val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
+        val validateConnectorUrl = "$baseUrl/connector-plugins/connector-name/config/validate/"
+        println(validateConnectorUrl)
+        val response = given()
+            .contentType(ContentType.JSON)
+            .body(
+                """{
+                "connector.class": "org.apache.kafka.connect.tools.MockSinkConnector",
+                "tasks.max": 1,
+                "topics": "test-topic"
+                }""".trimIndent()
+            ).`when`()
+            .put(validateConnectorUrl)
+            .then()
+            .statusCode(400)
+            .contentType(ContentType.JSON)
+            .body("message", hasItems("missing required properties: [contact.email, contact.teams]"))
 
         println(response.extract().body().asPrettyString())
     }

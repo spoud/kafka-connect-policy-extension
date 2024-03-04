@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.File
 import java.io.FileNotFoundException
 
 class RestPolicyExtensionTest {
@@ -28,6 +29,8 @@ class RestPolicyExtensionTest {
         }
             .isInstanceOf(FileNotFoundException::class.java)
             .hasMessageContaining("/invalid/path/file.json (No such file or directory")
+
+        //TODO fails on windows because of \ instead of /
     }
 
     @Test

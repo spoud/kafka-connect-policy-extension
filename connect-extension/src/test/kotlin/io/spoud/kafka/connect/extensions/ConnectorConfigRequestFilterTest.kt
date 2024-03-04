@@ -50,7 +50,7 @@ class ConnectorConfigRequestFilterTest {
 
     @Test
     fun `should be invoked for post new configs requests`() {
-        prepapreMock("POST", "connectors/new-connector-name")
+        prepapreMock("POST", "connectors")
 
         val res = requiresConfigCheckMethod.invoke(filter, mockContainerRequestContext)
         if (res is Boolean) assertTrue(res, "Filter should be applied")
