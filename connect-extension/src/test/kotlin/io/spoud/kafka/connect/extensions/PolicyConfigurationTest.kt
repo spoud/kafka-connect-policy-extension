@@ -8,7 +8,7 @@ class PolicyConfigurationTest {
 
     @Test
     fun `should load configuration`() {
-        val confFile = javaClass.getResource("/rest-policy-config.json")
+        val confFile = javaClass.getResource("/rest-policy-config-regex.json")
         check(confFile != null)
         PolicyConfiguration.configure(mutableMapOf(RestPolicyExtension.CONF_FILE_PATH_PROPERTY to confFile.path))
 
@@ -21,10 +21,14 @@ class PolicyConfigurationTest {
         val requireContactInfoJson = javaClass.getResource("/require-contact-info.json")
         val restPolicyJson = javaClass.getResource("/rest-policy-config.json")
         val contactInfoCheck = Files.newTemporaryFile().apply {
+            check(requireContactInfoJson != null)
             writeBytes(requireContactInfoJson.readBytes())
+
         }
         val config = Files.newTemporaryFile().apply {
+            check(restPolicyJson != null)
             writeText(restPolicyJson.readText().replace("require-contact-info.json", contactInfoCheck.name))
+
         }
         PolicyConfiguration.configure(mutableMapOf(RestPolicyExtension.CONF_FILE_PATH_PROPERTY to config.path))
         assertThat(PolicyConfiguration.policies).hasSize(1)

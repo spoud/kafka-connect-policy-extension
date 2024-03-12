@@ -11,7 +11,7 @@ class RestPolicyExtension : ConnectRestExtension {
         // extract file location for validation rules
         // read validation rules
         LOGGER.info("configuring the RestPolicyExtension")
-        if(!configs.contains(CONF_FILE_PATH_PROPERTY)) {
+        if (!configs.contains(CONF_FILE_PATH_PROPERTY)) {
             LOGGER.warn("Configuration $CONF_FILE_PATH_PROPERTY is not set")
         }
         PolicyConfiguration.configure(configs)
@@ -35,4 +35,8 @@ class RestPolicyExtension : ConnectRestExtension {
 }
 
 @Serializable
-data class ConfCheck(val name: String?, val className: String?, val configFile: String?)
+data class ConfigurationEntry(
+    val name: String?,
+    val className: String?,
+    val config: Map<String, String>
+)
