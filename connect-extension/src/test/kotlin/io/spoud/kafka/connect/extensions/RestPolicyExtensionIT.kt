@@ -51,7 +51,6 @@ class RestPolicyExtensionIT {
     fun `should require additional properties when creating or updating a connector via POST`() {
         val baseUrl = "http://${connect.host}:${connect.getMappedPort(CONNECT_PORT)}"
         val createConnectorUrl = "$baseUrl/connectors"
-        println("connector url ahaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: $createConnectorUrl")
         val response = given()
             .contentType(ContentType.JSON)
             .body(

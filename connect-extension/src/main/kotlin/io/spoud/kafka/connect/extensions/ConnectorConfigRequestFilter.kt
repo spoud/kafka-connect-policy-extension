@@ -1,9 +1,6 @@
 package io.spoud.kafka.connect.extensions
 
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.BufferedInputStream
@@ -47,10 +44,10 @@ class ConnectorConfigRequestFilter() : ContainerRequestFilter {
         var requestBody = readRequestBody(context)
         val connectorName: String
         if (context.method == "POST") {
-            connectorName = requestBody.jsonObject["name"].toString()
+            connectorName = requestBody.jsonObject["name"]?.jsonPrimitive?.content ?: ""
             requestBody = requestBody.jsonObject["config"] ?: JsonObject(emptyMap())
         } else {
-            connectorName = CONFIG_REGEX.find(context.uriInfo.path)?.groups?.get(0).toString()
+            connectorName = CONFIG_REGEX.find(context.uriInfo.path)?.groups?.get(1)?.value ?: ""
         }
         return ConnectorConfig(name = connectorName, config = requestBody)
     }
@@ -76,8 +73,8 @@ class ConnectorConfigRequestFilter() : ContainerRequestFilter {
 
     companion object {
         private val LOGGER: Logger = LoggerFactory.getLogger(ConnectorConfigRequestFilter::class.java)
-        private val CONFIG_REGEX: Regex = Regex("^connectors/[^/]+/config/?$")
+        private val CONFIG_REGEX: Regex = Regex("^connectors/([^/]+)/config/?$")
         private val POST_NEW_REGEX: Regex = Regex("^connectors$")
-        private val VALIDATE_REGEX: Regex = Regex("^connector-plugins/[^/]+/config/validate/?$")
+        private val VALIDATE_REGEX: Regex = Regex("^connector-plugins/([^/]+)/config/validate/?$")
     }
 }
