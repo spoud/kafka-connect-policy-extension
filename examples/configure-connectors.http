@@ -28,7 +28,7 @@ Content-Type: application/json
     "value.converter.schemas.enable": "false",
     "max.interval": 1000,
     "tasks.max": 5,
-    "contact.email": "team-alpha@example.com",
+    "contact.email": "",
     "contact.teams": "https://teams-link"
 }
 
@@ -44,7 +44,7 @@ Content-Type: application/json
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "value.converter.schemas.enable": "false",
     "max.interval": 1000,
-    "tasks.max": 4,
+    "tasks.max": "4",
     "contact.email": "team-alpha@example.com",
     "contact.teams": "https://teams-link"
 }

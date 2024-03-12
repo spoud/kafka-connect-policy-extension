@@ -19,4 +19,7 @@ class MockPolicyCheck(
             emptyList()
         }
     }
+
+    override fun configure(config: Map<String, String>) {
+    }
 }

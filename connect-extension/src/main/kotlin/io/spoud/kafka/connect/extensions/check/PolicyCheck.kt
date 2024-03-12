@@ -10,4 +10,6 @@ interface PolicyCheck {
      * @return list of policy violations, an empty list means that the config passed all rules
      */
     fun check(connectorConfiguration: JsonElement, connectorName: String): Collection<PolicyViolation>
+
+    fun configure(config: Map<String, String>)
 }

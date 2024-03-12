@@ -1,0 +1,7 @@
+[
+  {
+    "name": "env-prefix-in-name",
+    "className": "ConnectorNameCheck",
+    "config": {"regex": "^((dev)|(tst)|(prd))\\..+$"}
+  }
+]

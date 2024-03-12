@@ -5,17 +5,20 @@ import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.io.File
 
 class JsonSchemaPolicyCheckTest {
 
 
-    private lateinit var requiredContactSchema: String
+    private lateinit var config: Map<String, String>
+    private lateinit var confDir: File
 
     @BeforeEach
     fun setUp() {
         val schemaFile = javaClass.getResource("/require-contact-info.json")
         check(schemaFile != null)
-        this.requiredContactSchema = schemaFile.readText()
+        confDir = File(schemaFile.file).parentFile
+        config = mapOf("file" to File(schemaFile.file).name)
     }
 
     @Test
@@ -29,7 +32,9 @@ class JsonSchemaPolicyCheckTest {
             }
         """.trimIndent()
         )
-        val errors = JsonSchemaCheck(requiredContactSchema).check(missingContact, "connector1")
+        val errors = JsonSchemaCheck(confDir).apply {
+            configure(config)
+        }.check(missingContact, "connector1")
         assertThat(errors).hasSize(1)
         assertThat(errors.first().message).isEqualTo("missing required properties: [contact.email, contact.teams]")
     }
@@ -47,7 +52,9 @@ class JsonSchemaPolicyCheckTest {
             }
         """.trimIndent()
         )
-        val errors = JsonSchemaCheck(requiredContactSchema).check(contactValid, "connector1")
+        val errors = JsonSchemaCheck(confDir).apply {
+            configure(config)
+        }.check(contactValid, "connector1")
         assertThat(errors).hasSize(0)
     }
 }
