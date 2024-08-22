@@ -1,5 +1,6 @@
 package io.spoud.kafka.connect.extensions
 
+import io.spoud.kafka.connect.extensions.check.ConnectorNameCheck
 import io.spoud.kafka.connect.extensions.check.JsonSchemaCheck
 import io.spoud.kafka.connect.extensions.check.PolicyCheck
 import kotlinx.serialization.json.Json
@@ -19,24 +20,34 @@ object PolicyConfiguration {
 
     fun reload(): MutableList<PolicyCheck> {
         if (configs.contains(RestPolicyExtension.CONF_FILE_PATH_PROPERTY)) {
-            val file = File(configs[RestPolicyExtension.CONF_FILE_PATH_PROPERTY].toString())
+            val file = configurationFile()
             val jsonString = file.readText()
-            val confChecks = Json.decodeFromString<List<ConfCheck>>(jsonString)
+            val confChecks = Json.decodeFromString<List<ConfigurationEntry>>(jsonString)
 
             policies.clear()
-            policies.addAll(confChecks.map {
-                val path = "${file.parentFile.path}/${it.configFile}"
-                if (it.className == JsonSchemaCheck::class.qualifiedName) {
-                    JsonSchemaCheck(File(path).readText())
-                } else {
-                    throw IllegalArgumentException("no implementation for ${it.className} found")
-                }
-            })
+            policies.addAll(confChecks.map(::mapToPolicyCheck))
 
             LOGGER.info("configured {} policies", policies.size)
         }
         return policies
     }
+
+    fun configurationFile() = File(configs[RestPolicyExtension.CONF_FILE_PATH_PROPERTY].toString())
+
+    private fun mapToPolicyCheck(configurationEntry: ConfigurationEntry) =
+        when (configurationEntry.className) {
+            JsonSchemaCheck::class.simpleName -> {
+                JsonSchemaCheck(configurationFile().parentFile).apply { configure(configurationEntry.config) }
+            }
+
+            ConnectorNameCheck::class.simpleName -> {
+                ConnectorNameCheck().apply { configure(configurationEntry.config) }
+            }
+
+            else -> {
+                throw IllegalArgumentException("no implementation for ${configurationEntry.className} found")
+            }
+        }
 }
 
 

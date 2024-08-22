@@ -1,12 +1,21 @@
 [
   {
     "name": "require-contact-info",
-    "className": "io.spoud.kafka.connect.extensions.check.JsonSchemaCheck",
-    "configFile": "require-contact-info.json"
+    "className": "JsonSchemaCheck",
+    "config": {
+      "file": "require-contact-info.json"
+    }
   },
   {
     "name": "limit-connector-tasks",
-    "className": "io.spoud.kafka.connect.extensions.check.JsonSchemaCheck",
-    "configFile": "limit-connector-tasks.json"
+    "className": "JsonSchemaCheck",
+    "config": {
+      "file": "limit-connector-tasks.json"
+    }
+  },
+  {
+    "name": "env-prefix-in-name",
+    "className": "ConnectorNameCheck",
+    "config": {"regex": "^((dev)|(tst)|(prd))\\..+$"}
   }
 ]
