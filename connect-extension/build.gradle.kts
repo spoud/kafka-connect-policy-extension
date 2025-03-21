@@ -36,7 +36,7 @@ dependencies {
     // testing
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.assertj:assertj-core:3.25.3")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.10.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.16.1")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
     testImplementation("org.glassfish.jersey.core:jersey-server:2.4.1")
 
