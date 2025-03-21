@@ -43,7 +43,7 @@ dependencies {
 
     // testcontainers
     testImplementation("org.testcontainers:testcontainers:1.19.4")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.6")
     testImplementation("org.testcontainers:kafka:1.19.4")
 }
 
