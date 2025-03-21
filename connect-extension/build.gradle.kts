@@ -30,7 +30,7 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.14")
 
     // json + json schema
-    implementation("io.github.optimumcode:json-schema-validator:0.0.6")
+    implementation("io.github.optimumcode:json-schema-validator:0.4.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
     // testing
