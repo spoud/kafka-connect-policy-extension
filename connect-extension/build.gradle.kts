@@ -31,7 +31,7 @@ dependencies {
 
     // json + json schema
     implementation("io.github.optimumcode:json-schema-validator:0.0.6")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
 
     // testing
     testImplementation("org.jetbrains.kotlin:kotlin-test")
